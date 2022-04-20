@@ -42,8 +42,7 @@ def shuffle_word(word):
 TOTAL_WORDS = 4
 
 def pushStack(words, shuffled_words):
-    #add second parameter for scrambled word list?
-    #in result, why does it also shuffle '\n' into the list too? Look into
+    #suggestion: INSTEAD of adding words to stack after 30 seconds, decrease timer by an additional 15 seconds, probably easier than adding to stack
     for i in range(TOTAL_WORDS):
         wordStack.append(words[i]) #appends original word
         wordStack.append(shuffled_words[i]) #appends shuffled word
@@ -51,34 +50,32 @@ def pushStack(words, shuffled_words):
     #stack.pop()
     #print(stack)
 
+#Made a peek function without linked list, could be helpful in event handlers
+def peekStack(stack):
+    if stack:
+        return stack[-1]    # this will get the last element of stack
+    else:
+        return None
+
 def main():
     getWords()
-    #print(words)
     shuffled_words = [shuffle_word(word) for word in words]
     pushStack(words , shuffled_words)
+    print(peekStack(wordStack))
+    draw_wordStack()
+    user_input()
     #display_currentWord()
     #print(shuffled_words) #printing scrambled word list
     #print(words) #printing word list
 
-
 #WORD FONT
 word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
-
-
-#Append wordStack with random words
-
-
-
-#print Stack
-
 
 def draw_wordStack():
     global wordStack
     #print(shuffled_words) #printing scrambled word list
     #print(words) #printing word list
     #print(wordStack)
-   
-    
     
     for col in range (0,1):
         
@@ -94,20 +91,13 @@ def draw_wordStack():
 
             wordStack.pop()#pop "correct" word spelling
     
-    
-    
-
-def display_currentWord():
+#def display_currentWord():
    # currentWord = wordStack[1]
-    
-    #topword_text = word_font.render(currentWord, True, black)
-            
+    #topword_text = word_font.render(currentWord, True, black) 
     #screen.blit(topword_text, (250, 300))
-   
-    user_input()
+    #user_input()
 
 def user_input():
-
     
     # basic font for user typed
     base_font = pygame.font.Font(None, 32)
@@ -115,7 +105,6 @@ def user_input():
     
     # create rectangle
     input_rect = pygame.Rect(125, 200, 250, 50)
-    
     
     active = False
     
@@ -126,7 +115,6 @@ def user_input():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-    
     
             if event.type == pygame.KEYDOWN:
     
@@ -140,7 +128,7 @@ def user_input():
                 # formation
                 else:
                     user_text += event.unicode
-        
+                    
         pygame.draw.rect(screen, red, input_rect)
     
         text_surface = base_font.render(user_text, True, (255, 255, 255))
@@ -151,9 +139,6 @@ def user_input():
         # display.flip() will update only a portion of the
         # screen to updated, not full area
         pygame.display.flip()
-
-
-
 
 game_over = False#CHANGE LATER
 
@@ -166,13 +151,6 @@ active_type = True
 while running:
     #timer.tick(fps)
     screen.fill(black)
-    
     main()
-    
-    
-    draw_wordStack()
-    display_currentWord()    
-
-
     pygame.display.flip()
 pygame.quit()
