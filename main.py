@@ -80,7 +80,7 @@ word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 
 def draw_wordStack():
     #global wordStack
- 
+    pygame.display.update
     currentWord = 1
     for col in range (0,1):
         
@@ -140,6 +140,7 @@ def user_input():
                         print('correct')
                         wordStack.pop()
                         wordStack.pop()
+                        clearScreen()
                         draw_wordStack()
 
                     else:
@@ -177,9 +178,13 @@ currentWord = 0 #which word in the stack is the player
 running = True
 active_type = True
 
+def clearScreen():
+    screen.fill(black)
+
+
 while running:
     #timer.tick(fps)
-    screen.fill(black)
+    clearScreen()
     main()
     pygame.display.flip()
 pygame.quit()
