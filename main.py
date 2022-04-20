@@ -71,16 +71,13 @@ def main():
     pushStack(words , shuffled_words)
     draw_wordStack()
     user_input()
-    #display_currentWord()
-    #print(shuffled_words) #printing scrambled word list
-    #print(words) #printing word list
+    
 
 #WORD FONT
 word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 
 def draw_wordStack():
     #global wordStack
-    pygame.display.update
     currentWord = 1
     for col in range (0,1):
         
@@ -134,24 +131,29 @@ def user_input():
                     user_text = user_text[:-1]
     
                 elif event.key == pygame.K_RETURN:
-                    print(wordStack)
                     if checkCorrect(user_text):
                         pygame.draw.rect(screen, green, input_rect)
-                        print('correct')
+                        pygame.display.flip()
+                        pygame.time.delay(200)
+                        user_text = ''
                         wordStack.pop()
                         wordStack.pop()
                         clearScreen()
                         draw_wordStack()
+                        
 
                     else:
                         pygame.draw.rect(screen, red, input_rect)
+                        pygame.display.flip()
+                        pygame.time.delay(200)
+                        user_text = ''
    
                 # Unicode standard is used for string
                 # formation
                 else:
                     user_text += event.unicode
     
-        text_surface = base_font.render(user_text, True, (255, 255, 255))
+        text_surface = base_font.render(user_text, True, black)
         
         # render at position stated in arguments
         screen.blit(text_surface, (input_rect.x+5, input_rect.y+5))
@@ -164,10 +166,8 @@ def checkCorrect(userInput):
     abc = peekStackCorrect(wordStack)
     print(userInput)
     if userInput == peekStackCorrect(wordStack):
-        #user_text = ''
         return True
     else:
-        user_text = ''
         return False
 
 game_over = False#CHANGE LATER
