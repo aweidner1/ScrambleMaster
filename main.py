@@ -80,22 +80,23 @@ word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 
 def draw_wordStack():
     #global wordStack
-    #print(shuffled_words) #printing scrambled word list
-    #print(words) #printing word list
-    #print(wordStack)
+ 
     currentWord = 1
     for col in range (0,1):
         
-        for row in range (0, TOTAL_WORDS):#####implement number of words in stack here
-            pygame.draw.rect(screen, red, [125, 200, 250, 50], 0, 5)#PLAYER TEXT BOX
-            pygame.draw.rect(screen, white, [col *100 + 125, row *60 + 300, 250, 50],0,5)#([x,y,width,height], fill, corners)
-            
-            currentWordInStack = wordStack[-currentWord]#current scrambled word peeked from the stack
+        for row in range (0, (len(wordStack)//2)):#####implement number of words in stack here
+
+            if(len(wordStack)>=2):
+                pygame.draw.rect(screen, white, [col *100 + 125, row *60 + 300, 250, 50],0,5)#([x,y,width,height], fill, corners)
+                
+                currentWordInStack = wordStack[-currentWord]#current scrambled word peeked from the stack
            
-            piece_text = word_font.render(currentWordInStack, True, black)
+                piece_text = word_font.render(currentWordInStack, True, black)
             
-            screen.blit(piece_text, (col*100 + 150, row*60 + 300))
-            currentWord = currentWord + 2
+                screen.blit(piece_text, (col*100 + 150, row*60 + 300))
+            
+                currentWord = currentWord + 2
+            
     
 #def display_currentWord():
    # currentWord = wordStack[1]
@@ -137,6 +138,10 @@ def user_input():
                     if checkCorrect(user_text):
                         pygame.draw.rect(screen, green, input_rect)
                         print('correct')
+                        wordStack.pop()
+                        wordStack.pop()
+                        draw_wordStack()
+
                     else:
                         pygame.draw.rect(screen, red, input_rect)
    
