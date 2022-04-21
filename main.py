@@ -38,7 +38,8 @@ def getWords():
     with open('words.txt') as f:
         lines = f.readlines()
         for word in lines:
-            words.append(word.rstrip('\n')) 
+            if(not words.__contains__(word)):
+                words.append(word.rstrip('\n')) 
     return words  
 
 getWords()
