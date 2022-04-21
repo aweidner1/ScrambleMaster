@@ -20,9 +20,14 @@ gray = (220,220,220)
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 pygame.display.set_caption("Scramble Master")
 
-#set framerate
 fps = 60
-timer = pygame.time.Clock()
+clock = pygame.time.Clock()
+counter = 120
+text = '120'.rjust(3)
+pygame.time.set_timer(pygame.USEREVENT +1 , 1000)
+timer_rect = pygame.Rect(32, 48, 80, 50)
+
+
 
 # FROM TXT FILE,
 words = []
@@ -34,7 +39,9 @@ def getWords():
         lines = f.readlines()
         for word in lines:
             words.append(word.rstrip('\n')) 
-    return words        
+    return words  
+
+getWords()
 
 def shuffle_word(word):
     word = list(word)
@@ -42,15 +49,13 @@ def shuffle_word(word):
     return ''.join(word)
 
 TOTAL_WORDS = 4
+#create random num gen for push stack
 
 def pushStack(words, shuffled_words):
-    #suggestion: INSTEAD of adding words to stack after 30 seconds, decrease timer by an additional 15 seconds, probably easier than adding to stack
-    for i in range(TOTAL_WORDS):
-        wordStack.append(words[i]) #appends original word
-        wordStack.append(shuffled_words[i]) #appends shuffled word
-    #print(wordStack)
-    #stack.pop()
-    #print(stack)
+    for _ in range(TOTAL_WORDS):
+        randomNum = random.randint(0,len(words))
+        wordStack.append(words[randomNum]) #appends original word
+        wordStack.append(shuffled_words[randomNum]) #appends shuffled word
 
 #Made a peek function without linked list, could be helpful in event handlers
 def peekStack(stack):
@@ -66,12 +71,28 @@ def peekStackCorrect(stack):
         return None
 
 def main():
-    getWords()
+    #call at top of prog (getWords())
+    #getWords()
     shuffled_words = [shuffle_word(word) for word in words]
     pushStack(words , shuffled_words)
     draw_wordStack()
     user_input()
     
+    
+# def timer():
+#     clock.tick(60) 
+#     global text
+#     global counter
+#     font = pygame.font.SysFont('Consolas', 30)
+#     for e in pygame.event.get():
+#         if e.type == pygame.USEREVENT+1:
+#             counter -= 1
+#             text = str(counter).rjust(3) if counter > 0 else 'boom!'
+#         if e.type == pygame.QUIT:
+#             run = False
+#     pygame.draw.rect(screen, white, timer_rect)
+#     screen.blit(font.render(text, True, (0, 255, 0)), (32, 48))
+#     pygame.display.flip()
 
 #WORD FONT
 word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
@@ -112,10 +133,20 @@ def user_input():
     
     active = False
     
-    while True:
+    while True:   
         for event in pygame.event.get():
+            clock.tick(60) 
+            global text
+            global counter
+            font = pygame.font.SysFont('Consolas', 30)
             pygame.draw.rect(screen, gray, input_rect)
         # if user types QUIT then the screen will close
+            if event.type == pygame.USEREVENT+1:
+                counter -= 1
+                text = str(counter).rjust(3) if counter > 0 else 'boom!'
+            pygame.draw.rect(screen, white, timer_rect)
+            screen.blit(font.render(text, True, (0, 255, 0)), (32, 48))
+            pygame.display.flip()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -123,7 +154,6 @@ def user_input():
             if event.type == pygame.KEYDOWN:
     
                 # Check for backspace
-
 
                 if event.key == pygame.K_BACKSPACE:
     
@@ -146,6 +176,7 @@ def user_input():
                         pygame.draw.rect(screen, red, input_rect)
                         pygame.display.flip()
                         pygame.time.delay(200)
+                        counter = counter - 10
                         user_text = ''
    
                 # Unicode standard is used for string
