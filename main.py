@@ -140,7 +140,7 @@ def user_input():
             global counter
             font = pygame.font.SysFont('Consolas', 30)
             pygame.draw.rect(screen, gray, input_rect)
-        # if user types QUIT then the screen will close
+    
             if event.type == pygame.USEREVENT+1:
                 counter -= 1
                 text = str(counter).rjust(3) if counter > 0 else 'boom!'
@@ -176,7 +176,7 @@ def user_input():
                         pygame.draw.rect(screen, red, input_rect)
                         pygame.display.flip()
                         pygame.time.delay(200)
-                        counter = counter - 10
+                        counter = counter - 5
                         user_text = ''
    
                 # Unicode standard is used for string
