@@ -21,7 +21,7 @@ gray = (217,217,217)
 lightblue = (102,204,255)
 paleyellow = (255,255,153) 
 
-penalty = 0
+penalty = 5
 tries = 0
 
 
@@ -196,7 +196,7 @@ def user_input():
                     else:
                         global penalty
                         penaltyStr = str(penalty).rjust(3)
-                        penalty += -5
+                        penalty += 5
                         pygame.draw.rect(screen, lightblue, (400,48,100,100))
                         screen.blit(word_font.render(penaltyStr, True, red), (400, 48))
 
@@ -263,11 +263,6 @@ def displayMenu():
             pygame.display.flip()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startState = False
-                
-         
-
-    
-
 
 while running:
     #timer.tick(fps)
