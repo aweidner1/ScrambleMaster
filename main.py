@@ -1,5 +1,6 @@
 from itertools import count
 from random import shuffle
+from tkinter import font
 
 import pygame
 import random
@@ -11,11 +12,23 @@ pygame.init()
 WIDTH = 500
 HEIGHT = 600
 
+#COLORS
 white = (255,255,255)
 black = (0,0,0)
-red = (255,0,0)
-green = (0,255,0)
-gray = (220,220,220)
+red = (255,77,77)
+green = (128,255,128)
+gray = (217,217,217)
+lightblue = (102,204,255)
+paleyellow = (255,255,153) 
+
+penalty = 0
+tries = 0
+
+
+#STATES
+running = True
+active_type = True
+startState = True
 
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 pygame.display.set_caption("Scramble Master")
@@ -25,7 +38,7 @@ clock = pygame.time.Clock()
 counter = 120
 text = '120'.rjust(3)
 pygame.time.set_timer(pygame.USEREVENT +1 , 1000)
-timer_rect = pygame.Rect(32, 48, 80, 50)
+timer_rect = pygame.Rect(32, 48, 200, 50)
 
 
 
@@ -47,6 +60,8 @@ getWords()
 def shuffle_word(word):
     word = list(word)
     shuffle(word)
+    if(wordStack.__contains__(word)):#ensure shuffled word isn't shuffled correctly
+        shuffle_word(word)#recursively shuffle the word again
     return ''.join(word)
 
 TOTAL_WORDS = 4
@@ -97,16 +112,18 @@ def main():
 
 #WORD FONT
 word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
+font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 
 def draw_wordStack():
     #global wordStack
     currentWord = 1
+    
     for col in range (0,1):
         
         for row in range (0, (len(wordStack)//2)):#####implement number of words in stack here
 
             if(len(wordStack)>=2):
-                pygame.draw.rect(screen, white, [col *100 + 125, row *60 + 300, 250, 50],0,5)#([x,y,width,height], fill, corners)
+                pygame.draw.rect(screen, paleyellow, [col *100 + 125, row *60 + 300, 250, 50],0,5)#([x,y,width,height], fill, corners)
                 
                 currentWordInStack = wordStack[-currentWord]#current scrambled word peeked from the stack
            
@@ -135,6 +152,7 @@ def user_input():
     active = False
     
     while True:   
+       
         for event in pygame.event.get():
             clock.tick(60) 
             global text
@@ -145,8 +163,10 @@ def user_input():
             if event.type == pygame.USEREVENT+1:
                 counter -= 1
                 text = str(counter).rjust(3) if counter > 0 else 'boom!'
-            pygame.draw.rect(screen, white, timer_rect)
-            screen.blit(font.render(text, True, (0, 255, 0)), (32, 48))
+           
+            pygame.draw.rect(screen, lightblue, timer_rect)
+            
+            screen.blit(font.render(text, True, black), (32, 48))
             pygame.display.flip()
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -174,6 +194,19 @@ def user_input():
                         
 
                     else:
+                        global penalty
+                        penaltyStr = str(penalty).rjust(3)
+                        penalty += -5
+                        pygame.draw.rect(screen, lightblue, (400,48,100,100))
+                        screen.blit(word_font.render(penaltyStr, True, red), (400, 48))
+
+                        global tries
+                        tries += 1
+                        tryStr = str(tries).rjust(3)
+                        pygame.draw.rect(screen, lightblue, (300,48,100,100))
+                        screen.blit(word_font.render(tryStr, True, red), (300, 48))
+
+                        pygame.display.flip()
                         pygame.draw.rect(screen, red, input_rect)
                         pygame.display.flip()
                         pygame.time.delay(200)
@@ -209,14 +242,41 @@ currentWord = 0 #which word in the stack is the player
 #running state
 running = True
 active_type = True
+startState = True
 
+start_rect= pygame.Rect(75, 287, 350, 26)
 def clearScreen():
-    screen.fill(black)
+    screen.fill(lightblue)
+
+def displayMenu():
+    global startState
+    startState = True
+    while(startState):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            pygame.draw.rect(screen, paleyellow, start_rect)
+            startText = "CLICK ANYWHERE TO START"
+            screen.blit(font.render(startText, True, black), start_rect)
+            pygame.display.flip()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                startState = False
+                
+         
+
+    
 
 
 while running:
     #timer.tick(fps)
-    clearScreen()
-    main()
+    if(startState):
+        clearScreen()
+        displayMenu()
+
+    else: 
+        clearScreen()
+        main()
     pygame.display.flip()
 pygame.quit()
