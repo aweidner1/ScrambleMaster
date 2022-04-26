@@ -1,3 +1,4 @@
+from glob import glob
 from itertools import count
 from random import shuffle
 from tkinter import font
@@ -23,6 +24,15 @@ paleyellow = (255,255,153)
 
 penalty = 5
 tries = 0
+penaltyText = 'Penalty'
+triesText = 'Tries'
+currentWordText = 'Current Word:'
+
+#STATES
+running = True
+startState = True
+retryState = False
+endState = False
 
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 pygame.display.set_caption("Scramble Master")
@@ -31,7 +41,7 @@ clock = pygame.time.Clock()
 counter = 120
 text = '120'.rjust(3)
 pygame.time.set_timer(pygame.USEREVENT +1 , 1000)
-timer_rect = pygame.Rect(32, 48, 200, 50)
+timer_rect = pygame.Rect(32, 48, 100, 50)
 
 #FROM TXT FILE,
 words = []
@@ -82,7 +92,7 @@ def peekStackCorrect(stack):
         return None
 
 #Calling getWords() here, a bit more clean than calling between functions above
-getWords()
+
 def main():
     shuffled_words = [shuffle_word(word) for word in words]
     pushStack(words , shuffled_words)
@@ -113,6 +123,8 @@ def draw_wordStack():
                 currentWord = currentWord + 2
 
 #Retrieves user input, events, states, etc. Used for most functionality
+penalty_font = pygame.font.Font('freesansbold.ttf', 20)#(font name, font size)
+
 def user_input():
     
     # basic font for user typed
@@ -124,6 +136,11 @@ def user_input():
     
     active = False
     
+
+    global penalty
+    global tries
+
+
     while True:   
        
         for event in pygame.event.get():
@@ -158,6 +175,10 @@ def user_input():
     
                 elif event.key == pygame.K_RETURN:
                     if checkCorrect(user_text):
+                        
+                        tries = 0
+                        penalty = 5
+                        
                         pygame.draw.rect(screen, green, input_rect)
                         pygame.display.flip()
                         pygame.time.delay(200)
@@ -172,19 +193,31 @@ def user_input():
                             winGame()
 
                     else:
-                        global penalty
+                 
                         penaltyStr = str(penalty).rjust(3)
                         penalty += 5
-                        pygame.draw.rect(screen, lightblue, (400,48,100,100))
-                        screen.blit(word_font.render(penaltyStr, True, red), (400, 48))
+                        pygame.draw.rect(screen,lightblue,(400,48,100,50))
 
-                        global tries
+
+                        global currentWordText
+                        screen.blit(penalty_font.render(currentWordText, True, red), (150, 40,10,10))
+                        pygame.display.flip()
+
+                        global penaltyText
+                        screen.blit(penalty_font.render(penaltyText, True, red), (385, 20,10,10))
+                        pygame.display.flip()
+                        
+                        screen.blit(word_font.render(penaltyStr, True, red), (400, 48))
+                        
+                        global triesText
                         tries += 1
+                        pygame.draw.rect(screen,lightblue,(300,48,100,50))
                         tryStr = str(tries).rjust(3)
-                        pygame.draw.rect(screen, lightblue, (300,48,100,100))
+                        screen.blit(penalty_font.render(triesText, True, red), (300, 20,10,10))
+                        pygame.display.flip()
                         screen.blit(word_font.render(tryStr, True, red), (300, 48))
 
-                        pygame.display.flip()
+                       
                         pygame.draw.rect(screen, red, input_rect)
                         pygame.display.flip()
                         pygame.time.delay(200)
@@ -207,7 +240,7 @@ def user_input():
 
 #checkCorrect function used in userInput fuction
 def checkCorrect(userInput):
-    print(userInput)
+    #print(userInput)
     if userInput == peekStackCorrect(wordStack):
         return True
     else:
@@ -217,13 +250,7 @@ game_over = False #CHANGE LATER
 
 currentWord = 0 #which word in the stack is the player
 
-#running state
-running = True
-startState = True
-endState = True
-#STATES 
-running = True
-startState = True
+
 
 start_rect= pygame.Rect(75, 287, 350, 26)
 def clearScreen():
@@ -248,6 +275,7 @@ def displayMenu():
 #End game function, called in userInput to check state of game
 def endGame():
      global endState
+     global retryState
      endState = True
      while(endState):
          for event in pygame.event.get():
@@ -259,12 +287,13 @@ def endGame():
              screen.blit(font.render(endText, True, black), start_rect)
              pygame.display.flip()
              if event.type == pygame.MOUSEBUTTONDOWN:
-                 pygame.quit()
-                 sys.exit()
+                pygame.quit()
+                sys.exit()
 
 #Win game function, called in userInput to check state of game
 def winGame():
     global endState
+    global retryState
     endState = True
     while(endState):
         for event in pygame.event.get():
@@ -276,6 +305,7 @@ def winGame():
             screen.blit(font.render(endText, True, black), start_rect)
             pygame.display.flip()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                
                 pygame.quit()
                 sys.exit()
             
@@ -283,7 +313,9 @@ while running:
     if(startState):
         clearScreen()
         displayMenu()
+
     else: 
+        getWords()
         clearScreen()
         main()
     pygame.display.flip()
