@@ -24,11 +24,6 @@ paleyellow = (255,255,153)
 penalty = 5
 tries = 0
 
-#STATES
-running = True
-active_type = True
-startState = True
-
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 pygame.display.set_caption("Scramble Master")
 
@@ -224,9 +219,11 @@ currentWord = 0 #which word in the stack is the player
 
 #running state
 running = True
-active_type = True
 startState = True
 endState = True
+#STATES 
+running = True
+startState = True
 
 start_rect= pygame.Rect(75, 287, 350, 26)
 def clearScreen():
