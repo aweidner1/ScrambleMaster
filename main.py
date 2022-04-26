@@ -24,7 +24,6 @@ paleyellow = (255,255,153)
 penalty = 5
 tries = 0
 
-
 #STATES
 running = True
 active_type = True
@@ -33,20 +32,18 @@ startState = True
 screen = pygame.display.set_mode([WIDTH,HEIGHT])
 pygame.display.set_caption("Scramble Master")
 
-fps = 60
 clock = pygame.time.Clock()
 counter = 120
 text = '120'.rjust(3)
 pygame.time.set_timer(pygame.USEREVENT +1 , 1000)
 timer_rect = pygame.Rect(32, 48, 200, 50)
 
-
-
-# FROM TXT FILE,
+#FROM TXT FILE,
 words = []
 shuffled_words = []
 wordStack = []
 
+#reading from txt file, returns list of words
 def getWords():
     with open('words.txt') as f:
         lines = f.readlines()
@@ -55,8 +52,10 @@ def getWords():
                 words.append(word.rstrip('\n')) 
     return words  
 
-getWords()
+#maybe call above main, looks messy calling function randomly here?
+#getWords()
 
+#utilizes recursive and stack to ensure word is shuffled
 def shuffle_word(word):
     word = list(word)
     shuffle(word)
@@ -65,57 +64,42 @@ def shuffle_word(word):
     return ''.join(word)
 
 TOTAL_WORDS = 4
-#create random num gen for push stack
 
+#Push stack function
 def pushStack(words, shuffled_words):
     for _ in range(TOTAL_WORDS):
         randomNum = random.randint(0,len(words))
         wordStack.append(words[randomNum]) #appends original word
         wordStack.append(shuffled_words[randomNum]) #appends shuffled word
 
-#Made a peek function without linked list, could be helpful in event handlers
+#Peek stack function
 def peekStack(stack):
     if stack:
         return stack[-1]    # this will get the last element of stack
     else:
         return None
 
+#Peek correct word from stack
 def peekStackCorrect(stack):
     if stack:
         return stack[-2]    # this will get the second last element of stack
     else:
         return None
 
+#Calling getWords() here, a bit more clean than calling between functions above
+getWords()
 def main():
-    #call at top of prog (getWords())
-    #getWords()
     shuffled_words = [shuffle_word(word) for word in words]
     pushStack(words , shuffled_words)
     draw_wordStack()
     user_input()
-    
-    
-# def timer():
-#     clock.tick(60) 
-#     global text
-#     global counter
-#     font = pygame.font.SysFont('Consolas', 30)
-#     for e in pygame.event.get():
-#         if e.type == pygame.USEREVENT+1:
-#             counter -= 1
-#             text = str(counter).rjust(3) if counter > 0 else 'boom!'
-#         if e.type == pygame.QUIT:
-#             run = False
-#     pygame.draw.rect(screen, white, timer_rect)
-#     screen.blit(font.render(text, True, (0, 255, 0)), (32, 48))
-#     pygame.display.flip()
 
 #WORD FONT
 word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 
+#Drawing wordStack boxes, stack, etc.
 def draw_wordStack():
-    #global wordStack
     currentWord = 1
     
     for col in range (0,1):
@@ -132,14 +116,8 @@ def draw_wordStack():
                 screen.blit(piece_text, (col*100 + 150, row*60 + 300))
             
                 currentWord = currentWord + 2
-            
-    
-#def display_currentWord():
-   # currentWord = wordStack[1]
-    #topword_text = word_font.render(currentWord, True, black) 
-    #screen.blit(topword_text, (250, 300))
-    #user_input()
 
+#Retrieves user input, events, states, etc. Used for most functionality
 def user_input():
     
     # basic font for user typed
@@ -161,8 +139,12 @@ def user_input():
             pygame.draw.rect(screen, gray, input_rect)
     
             if event.type == pygame.USEREVENT+1:
-                counter -= 1
-                text = str(counter).rjust(3) if counter > 0 else 'boom!'
+                if counter > 0:
+                    counter -= 1
+                    text = str(counter).rjust(3)
+                else:
+                     clearScreen() 
+                     endGame()
            
             pygame.draw.rect(screen, lightblue, timer_rect)
             
@@ -175,9 +157,7 @@ def user_input():
             if event.type == pygame.KEYDOWN:
     
                 # Check for backspace
-
                 if event.key == pygame.K_BACKSPACE:
-    
                     # get text input from 0 to -1 i.e. end.
                     user_text = user_text[:-1]
     
@@ -191,7 +171,10 @@ def user_input():
                         wordStack.pop()
                         clearScreen()
                         draw_wordStack()
-                        
+                        #IF statement checking if game is over (every loop)
+                        if (len(wordStack) == 0):
+                            clearScreen()
+                            winGame()
 
                     else:
                         global penalty
@@ -227,15 +210,15 @@ def user_input():
         # screen to updated, not full area
         pygame.display.flip()
 
+#checkCorrect function used in userInput fuction
 def checkCorrect(userInput):
-    abc = peekStackCorrect(wordStack)
     print(userInput)
     if userInput == peekStackCorrect(wordStack):
         return True
     else:
         return False
 
-game_over = False#CHANGE LATER
+game_over = False #CHANGE LATER
 
 currentWord = 0 #which word in the stack is the player
 
@@ -243,11 +226,13 @@ currentWord = 0 #which word in the stack is the player
 running = True
 active_type = True
 startState = True
+endState = True
 
 start_rect= pygame.Rect(75, 287, 350, 26)
 def clearScreen():
     screen.fill(lightblue)
 
+#Menu function when beginning the prog
 def displayMenu():
     global startState
     startState = True
@@ -263,13 +248,44 @@ def displayMenu():
             pygame.display.flip()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 startState = False
+#End game function, called in userInput to check state of game
+def endGame():
+     global endState
+     endState = True
+     while(endState):
+         for event in pygame.event.get():
+             if event.type == pygame.QUIT:
+                 pygame.quit()
+                 sys.exit()
+             pygame.draw.rect(screen, paleyellow, start_rect)
+             endText = "GAMEOVER, click to exit."
+             screen.blit(font.render(endText, True, black), start_rect)
+             pygame.display.flip()
+             if event.type == pygame.MOUSEBUTTONDOWN:
+                 pygame.quit()
+                 sys.exit()
 
+#Win game function, called in userInput to check state of game
+def winGame():
+    global endState
+    endState = True
+    while(endState):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            pygame.draw.rect(screen, paleyellow, start_rect)
+            endText = "Congrats, click to exit game."
+            screen.blit(font.render(endText, True, black), start_rect)
+            pygame.display.flip()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.quit()
+                sys.exit()
+            
 while running:
-    #timer.tick(fps)
     if(startState):
         clearScreen()
         displayMenu()
-
     else: 
         clearScreen()
         main()
