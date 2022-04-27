@@ -73,7 +73,7 @@ TOTAL_WORDS = 4
 #Push stack function
 def pushStack(words, shuffled_words):
     for _ in range(TOTAL_WORDS):
-        randomNum = random.randint(0,len(words))
+        randomNum = random.randint(0,len(words)-1)
         wordStack.append(words[randomNum]) #appends original word
         wordStack.append(shuffled_words[randomNum]) #appends shuffled word
 
