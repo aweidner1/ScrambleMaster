@@ -148,8 +148,6 @@ def user_input():
     
   
     
-    active = False
-    
     global font
     global penalty
     global tries
@@ -262,6 +260,7 @@ def user_input():
                     if(len(user_text) < 5): #ENSURE NO MORE THAN 5 CHRACTERS CAN BE TYPED BY THE USER
                         user_text += event.unicode
                         text_surface = base_font.render(user_text, True, black)
+                        pygame.draw.rect(screen, gray, input_rect)
                         screen.blit(text_surface, (input_rect.x+80, input_rect.y+5))
                         pygame.display.flip()
 
