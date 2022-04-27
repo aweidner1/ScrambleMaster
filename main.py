@@ -155,6 +155,15 @@ def user_input():
     global tries
     global input_rect
 
+    screen.blit(scrambleFont.render(scrambleText, True, black), (15, 550))
+    pygame.display.flip()
+
+    screen.blit(masterFont.render(masterText, True, paleyellow), (260, 550))
+    pygame.display.flip()
+
+    screen.blit(scrambleFont.render(timerText, True, black), (167, 20))
+    pygame.display.flip()
+
     while True:   
        
         for event in pygame.event.get():
@@ -162,14 +171,8 @@ def user_input():
             global text
             global counter
 
-            screen.blit(scrambleFont.render(scrambleText, True, black), (15, 550))
-            pygame.display.flip()
-
-            screen.blit(masterFont.render(masterText, True, paleyellow), (260, 550))
-            pygame.display.flip()
-
-            screen.blit(scrambleFont.render(timerText, True, black), (167, 20))
-            pygame.display.flip()
+           
+           
 
 
             if event.type == pygame.USEREVENT+1:
@@ -292,6 +295,11 @@ def displayMenu():
     global startState
     startState = True
     
+    screen.blit(scrambleFont.render(scrambleText, True, black), (15, 150))
+    pygame.display.flip()
+
+    screen.blit(masterFont.render(masterText, True, paleyellow), (260, 150))
+    pygame.display.flip()
     
     while(startState):
         for event in pygame.event.get():
@@ -300,11 +308,7 @@ def displayMenu():
                 sys.exit()
 
 
-            screen.blit(scrambleFont.render(scrambleText, True, black), (15, 150))
-            pygame.display.flip()
-
-            screen.blit(masterFont.render(masterText, True, paleyellow), (260, 150))
-            pygame.display.flip()
+            
 
             pygame.draw.rect(screen, paleyellow, start_rect)
             startText = "CLICK ANYWHERE TO START"
