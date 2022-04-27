@@ -22,11 +22,11 @@ gray = (217,217,217)
 lightblue = (102,204,255)
 paleyellow = (255,255,153) 
 
-penalty = 5
+penalty = 0
 tries = 0
-penaltyText = 'Penalty'
-triesText = 'Tries'
-currentWordText = 'Current Word:'
+penaltyText = 'Seconds(-):'
+triesText = 'Tries:'
+currentWordText = 'Current Word ->'
 
 #STATES
 running = True
@@ -41,7 +41,7 @@ clock = pygame.time.Clock()
 counter = 120
 text = '120'.rjust(3)
 pygame.time.set_timer(pygame.USEREVENT +1 , 1000)
-timer_rect = pygame.Rect(32, 48, 100, 50)
+timer_rect = pygame.Rect(190, 85, 150, 60)
 
 #FROM TXT FILE,
 words = []
@@ -102,11 +102,25 @@ def main():
 #WORD FONT
 word_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
 font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
+timer_font = pygame.font.Font('freesansbold.ttf', 64)#(font name, font size)
 
+timerText = 'TIMER'
+
+
+def drawInputBox():
+        pygame.draw.rect(screen, gray, input_rect)
+
+input_rect = pygame.Rect(125, 200, 250, 50)
 #Drawing wordStack boxes, stack, etc.
 def draw_wordStack():
     currentWord = 1
     
+    # create rectangle
+    
+
+    drawInputBox()
+    
+
     for col in range (0,1):
         
         for row in range (0, (len(wordStack)//2)):#####implement number of words in stack here
@@ -118,28 +132,28 @@ def draw_wordStack():
            
                 piece_text = word_font.render(currentWordInStack, True, black)
             
-                screen.blit(piece_text, (col*100 + 150, row*60 + 300))
+                screen.blit(piece_text, (col*100 + 210, row*60 + 310))
             
                 currentWord = currentWord + 2
 
 #Retrieves user input, events, states, etc. Used for most functionality
 penalty_font = pygame.font.Font('freesansbold.ttf', 20)#(font name, font size)
 
+
 def user_input():
     
     # basic font for user typed
-    base_font = pygame.font.Font(None, 32)
+    base_font = pygame.font.Font('freesansbold.ttf', 24)#(font name, font size)
     user_text = ''
     
-    # create rectangle
-    input_rect = pygame.Rect(125, 200, 250, 50)
+  
     
     active = False
     
-
+    global font
     global penalty
     global tries
-
+    global input_rect
 
     while True:   
        
@@ -147,9 +161,17 @@ def user_input():
             clock.tick(60) 
             global text
             global counter
-            font = pygame.font.SysFont('Consolas', 30)
-            pygame.draw.rect(screen, gray, input_rect)
-    
+
+            screen.blit(scrambleFont.render(scrambleText, True, black), (15, 550))
+            pygame.display.flip()
+
+            screen.blit(masterFont.render(masterText, True, paleyellow), (260, 550))
+            pygame.display.flip()
+
+            screen.blit(scrambleFont.render(timerText, True, black), (167, 20))
+            pygame.display.flip()
+
+
             if event.type == pygame.USEREVENT+1:
                 if counter > 0:
                     counter -= 1
@@ -159,9 +181,9 @@ def user_input():
                      endGame()
            
             pygame.draw.rect(screen, lightblue, timer_rect)
-            
-            screen.blit(font.render(text, True, black), (32, 48))
+            screen.blit(timer_font.render(text, True, black), (190, 85))
             pygame.display.flip()
+            
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
@@ -172,6 +194,11 @@ def user_input():
                 if event.key == pygame.K_BACKSPACE:
                     # get text input from 0 to -1 i.e. end.
                     user_text = user_text[:-1]
+                    drawInputBox()
+                    text_surface = base_font.render(user_text, True, black)
+                    screen.blit(text_surface, (input_rect.x+80, input_rect.y+5))
+                    pygame.display.flip()
+
     
                 elif event.key == pygame.K_RETURN:
                     if checkCorrect(user_text):
@@ -193,50 +220,47 @@ def user_input():
                             winGame()
 
                     else:
-                 
-                        penaltyStr = str(penalty).rjust(3)
+                        
                         penalty += 5
-                        pygame.draw.rect(screen,lightblue,(400,48,100,50))
+                        penaltyStr = str(penalty).rjust(3)
+                        
+                        pygame.draw.rect(screen,lightblue,(205,155,300,50))
 
-
+    
                         global currentWordText
-                        screen.blit(penalty_font.render(currentWordText, True, red), (150, 40,10,10))
+                        screen.blit(penalty_font.render(currentWordText, True, red), (25, 155))
                         pygame.display.flip()
 
                         global penaltyText
-                        screen.blit(penalty_font.render(penaltyText, True, red), (385, 20,10,10))
+                        screen.blit(penalty_font.render(penaltyText, True, red), (200, 155))
                         pygame.display.flip()
                         
-                        screen.blit(word_font.render(penaltyStr, True, red), (400, 48))
+                        screen.blit(word_font.render(penaltyStr, True, red), (310, 155))
                         
                         global triesText
                         tries += 1
-                        pygame.draw.rect(screen,lightblue,(300,48,100,50))
+                        pygame.draw.rect(screen,lightblue,(350,155,100,50))
                         tryStr = str(tries).rjust(3)
-                        screen.blit(penalty_font.render(triesText, True, red), (300, 20,10,10))
+                        screen.blit(penalty_font.render(triesText, True, red), (360, 155))
                         pygame.display.flip()
-                        screen.blit(word_font.render(tryStr, True, red), (300, 48))
+                        screen.blit(word_font.render(tryStr, True, red), (415, 155))
 
                        
                         pygame.draw.rect(screen, red, input_rect)
                         pygame.display.flip()
                         pygame.time.delay(200)
+                        pygame.draw.rect(screen, gray, input_rect)
                         counter = counter - 5
                         user_text = ''
    
                 # Unicode standard is used for string
                 # formation
                 else:
-                    user_text += event.unicode
-    
-        text_surface = base_font.render(user_text, True, black)
-        
-        # render at position stated in arguments
-        screen.blit(text_surface, (input_rect.x+5, input_rect.y+5))
-        
-        # display.flip() will update only a portion of the
-        # screen to updated, not full area
-        pygame.display.flip()
+                    if(len(user_text) < 5): #ENSURE NO MORE THAN 5 CHRACTERS CAN BE TYPED BY THE USER
+                        user_text += event.unicode
+                        text_surface = base_font.render(user_text, True, black)
+                        screen.blit(text_surface, (input_rect.x+80, input_rect.y+5))
+                        pygame.display.flip()
 
 #checkCorrect function used in userInput fuction
 def checkCorrect(userInput):
@@ -246,7 +270,6 @@ def checkCorrect(userInput):
     else:
         return False
 
-game_over = False #CHANGE LATER
 
 currentWord = 0 #which word in the stack is the player
 
@@ -256,15 +279,32 @@ start_rect= pygame.Rect(75, 287, 350, 26)
 def clearScreen():
     screen.fill(lightblue)
 
+scrambleFont = pygame.font.SysFont('candara.ttf', 75)
+scrambleText = "Scramble"
+
+masterFont = pygame.font.SysFont('Impact.ttf', 75)
+masterText = "MASTER"
+
+
+
 #Menu function when beginning the prog
 def displayMenu():
     global startState
     startState = True
+    
+    
     while(startState):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+
+            screen.blit(scrambleFont.render(scrambleText, True, black), (15, 150))
+            pygame.display.flip()
+
+            screen.blit(masterFont.render(masterText, True, paleyellow), (260, 150))
+            pygame.display.flip()
 
             pygame.draw.rect(screen, paleyellow, start_rect)
             startText = "CLICK ANYWHERE TO START"
@@ -283,7 +323,7 @@ def endGame():
                  pygame.quit()
                  sys.exit()
              pygame.draw.rect(screen, paleyellow, start_rect)
-             endText = "GAMEOVER, click to exit."
+             endText = "YOU LOST :( click to exit."
              screen.blit(font.render(endText, True, black), start_rect)
              pygame.display.flip()
              if event.type == pygame.MOUSEBUTTONDOWN:
@@ -301,7 +341,7 @@ def winGame():
                 pygame.quit()
                 sys.exit()
             pygame.draw.rect(screen, paleyellow, start_rect)
-            endText = "Congrats, click to exit game."
+            endText = "YOU WON :) click to exit game."
             screen.blit(font.render(endText, True, black), start_rect)
             pygame.display.flip()
             if event.type == pygame.MOUSEBUTTONDOWN:
