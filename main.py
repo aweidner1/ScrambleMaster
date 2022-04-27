@@ -341,7 +341,7 @@ def winGame():
                 pygame.quit()
                 sys.exit()
             pygame.draw.rect(screen, paleyellow, start_rect)
-            endText = "YOU WON :) click to exit game."
+            endText = "YOU WON :) click to exit."
             screen.blit(font.render(endText, True, black), start_rect)
             pygame.display.flip()
             if event.type == pygame.MOUSEBUTTONDOWN:
