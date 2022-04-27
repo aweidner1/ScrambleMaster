@@ -205,7 +205,7 @@ def user_input():
                     if checkCorrect(user_text):
                         
                         tries = 0
-                        penalty = 5
+                        penalty = 0
                         
                         pygame.draw.rect(screen, green, input_rect)
                         pygame.display.flip()
